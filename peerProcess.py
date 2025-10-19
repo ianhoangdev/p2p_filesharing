@@ -20,3 +20,17 @@ class Peer:
             if peer['peer_id'] == self.peer_id:
                 self.my_info = peer
                 break
+        
+        # initialize peer attributes
+        self.host = self.my_info['host_name']
+        self.port = self.my_info['port']
+        self.has_file = self.my_info['has_file']
+
+        logger.info(f"My info: Host={self.host}, Port={self.port}, HasFile={self.has_file}")
+
+        # file and piece size
+        self.file_size = self.common_cfg['FileSize']
+        self.piece_size = self.common_cfg['PieceSize']
+        
+        self.bitfield = Bitfield(self.file_size, self.piece_size, self.has_file)
+        self.total_pieces = self.bitfield.total_pieces
