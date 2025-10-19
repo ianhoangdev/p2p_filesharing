@@ -22,3 +22,34 @@ class Bitfield:
         byte_index = piece_index // 8
         bit_index = piece_index % 8
 
+        # creates a binary number with only one bit turned on
+        mask = 1 << (7 - bit_index)
+
+        return (self.bitfield[byte_index] & mask) != 0
+    
+    def set_piece(self, piece_index):
+        byte_index = piece_index // 8
+        bit_index = piece_index % 8
+        
+        # turn on only the bit at bit_index
+        mask = 1 << (7 - bit_index)
+
+        # |= is the bitwise OR assignment op
+        self.bitfield[byte_index] |= mask
+
+    def compare(self, other_bitfield):
+        # basically get bits that other has but self doesn't
+        interesting_pieces = []
+        for i in range(self.total_pieces):
+            if other_bitfield.has_piece(i) and not self.has_piece(i):
+                interesting_pieces.append(i)
+        return interesting_pieces
+    
+    def is_complete(self):
+        for i in range(self.total_pieces):
+            if not self.has_piece(i):
+                return False
+        return True
+    
+    def update_from_payload(self, payload: bytes):
+        self.bitfield = bytearray(payload)
