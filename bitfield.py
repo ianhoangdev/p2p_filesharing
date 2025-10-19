@@ -1,7 +1,7 @@
 import math
 class Bitfield:
     def __init__(self, file_size, piece_size, has_file=0):
-        self.piece_size = piece_size
+        self.file_size = file_size
         self.piece_size = piece_size
 
         self.total_pieces = math.ceil(file_size / piece_size)
@@ -11,7 +11,7 @@ class Bitfield:
         # -> 1 bit per piece instead of 1 byte per piece
         self.bitfield = bytearray(num_bytes)
 
-        # if has_file is 1 / True, set all pieces to 1
+        # if has_file is 1 aka True, set all pieces to 1
         if has_file == 1: self.set_all_pieces()
     
     def set_all_pieces(self):

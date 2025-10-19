@@ -8,7 +8,6 @@ from message import (
     parse_message  # We'll need this soon
 )
 
-# Constants for reading from socket
 HANDSHAKE_LEN = 32
 MSG_LEN_PREFIX = 4
 
@@ -72,7 +71,6 @@ class ConnectionHandler(threading.Thread):
         peer_id, valid = parse_handshake(recv_handshake)
         
         if not valid:
-            logger.warning("Received an invalid handshake.")
             return False
             
         # validate peer ID
