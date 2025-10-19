@@ -53,3 +53,6 @@ class Bitfield:
     
     def update_from_payload(self, payload: bytes):
         self.bitfield = bytearray(payload)
+    
+    def get_payload(self) -> bytes:
+        return bytes(self.bitfield)

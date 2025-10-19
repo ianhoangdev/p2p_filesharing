@@ -22,11 +22,10 @@ def parse_handshake(handshake: bytes):
     zero_bits = handshake[18:28]
     peer_id_bytes = handshake[28:32]
     
-    # Check if header and zero bits are correct
     if header != HANDSHAKE_HEADER or zero_bits != HANDSHAKE_ZEROBITS:
         return None, False
         
-    # Unpack the 4-byte peer ID
+    # unpack the 4-byte peer ID
     peer_id = str(struct.unpack('!I', peer_id_bytes)[0])
     return peer_id, True
 
@@ -40,21 +39,17 @@ def create_message(msg_type: int, payload: bytes = b'') -> bytes:
     return len_prefix + type_prefix + payload
 
 def create_have(piece_index: int) -> bytes:
-    """Creates a 'have' message."""
     payload = struct.pack('!I', piece_index)
     return create_message(MSG_HAVE, payload)
 
 def create_request(piece_index: int) -> bytes:
-    """Creates a 'request' message."""
     payload = struct.pack('!I', piece_index)
     return create_message(MSG_REQUEST, payload)
 
 def create_bitfield(bitfield_payload: bytes) -> bytes:
-    """Creates a 'bitfield' message."""
     return create_message(MSG_BITFIELD, bitfield_payload)
 
 def create_piece(piece_index: int, content: bytes) -> bytes:
-    """Creates a 'piece' message."""
     index_payload = struct.pack('!I', piece_index)
     payload = index_payload + content
     return create_message(MSG_PIECE, payload)
