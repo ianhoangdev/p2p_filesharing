@@ -4,7 +4,10 @@ import struct
 from logger import logger
 from message import (
     create_handshake, parse_handshake,
-    create_bitfield, MSG_BITFIELD,
+    create_bitfield, create_have, create_request, create_piece,
+    MSG_CHOKE, MSG_UNCHOKE, MSG_INTERESTED, MSG_NOT_INTERESTED,
+    MSG_HAVE, MSG_BITFIELD, MSG_REQUEST, MSG_PIECE,
+    MSG_INTERESTED_BYTES, MSG_NOT_INTERESTED_BYTE
 )
 
 HANDSHAKE_LEN = 32
@@ -41,7 +44,44 @@ class ConnectionHandler(threading.Thread):
             
             # --- Main Message Loop (To be implemented) ---
             logger.info(f"Starting message loop with Peer {self.remote_peer_id}.")
-            # self._message_loop() 
+
+            while True:
+                # step 1: read msg length (4 bytes), this is a blocking call
+                len_prefix_bytes = self.sock.recv(MSG_LEN_PREFIX)
+                
+                if not len_prefix_bytes:
+                    logger.info(f"Connection closed by {self.remote_peer_id} (no len_prefix).")
+                    break
+                
+                if len(len_prefix_bytes) < MSG_LEN_PREFIX:
+                    logger.warning(f"Received incomplete len_prefix from {self.remote_peer_id}.")
+                    break
+                
+                # step 2: unpack length
+                # msg_len = length of (msg type + payload)
+                msg_len = struct.unpack('!I', len_prefix_bytes)[0]
+                
+                if msg_len == 0:
+                    logger.debug(f"Received keep-alive from {self.remote_peer_id}.")
+                    continue
+                
+                # step 3: read msg body (msg type + payload)
+                msg_body = self.sock.recv(msg_len)
+                
+                if not msg_body:
+                    logger.warning(f"Connection closed by {self.remote_peer_id} (no msg_body).")
+                    break
+                
+                if len(msg_body) < msg_len:
+                    logger.warning(f"Received incomplete message body from {self.remote_peer_id}.")
+                    break
+                
+                # step 4: parse body
+                msg_type = msg_body[0]
+                payload = msg_body[1:]
+                
+                # step 5: handle message (to be implemented)
+                self._handle_message(msg_type, payload)
 
         except (BrokenPipeError, ConnectionResetError, EOFError) as e:
             logger.warning(f"Connection with {self.remote_peer_id or 'Unknown'} dropped: {e}")
@@ -49,6 +89,26 @@ class ConnectionHandler(threading.Thread):
             logger.error(f"Error in ConnectionHandler for {self.remote_peer_id}: {e}", exc_info=True)
         finally:
             self.cleanup()
+    
+    def _handle_message(self, msg_type: int, payload: bytes):
+        # handling all incoming messages
+        logger.debug(f"Received message type {msg_type} from {self.remote_peer_id} with payload len {len(payload)}")
+        if msg_type == MSG_CHOKE:
+            ...
+        elif msg_type == MSG_UNCHOKE:
+            ...
+        elif msg_type == MSG_INTERESTED:
+            ...
+        elif msg_type == MSG_NOT_INTERESTED:
+            ...
+        elif msg_type == MSG_HAVE:
+            ...
+        elif msg_type == MSG_BITFIELD:
+            ...
+        elif msg_type == MSG_REQUEST:
+            ...
+        elif msg_type == MSG_PIECE:
+            ...
 
     def _perform_handshake(self) -> bool:
 
