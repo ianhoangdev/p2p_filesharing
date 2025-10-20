@@ -3,23 +3,15 @@ import configparser
 # Parse Common.cfg and PeerInfo.cfg configuration files
 
 def parse_common_config(filename="Common.cfg"):
-    config = configparser.ConfigParser()
-
+    settings = {}
     try:
         with open(filename, 'r') as f:
-            config_str = '[default]\n' + f.read()
-        config.read_string(config_str)
-        
-        settings = {
-            'NumberOfPreferredNeighbors': config.getint('default', 'NumberOfPreferredNeighbors'),
-            'UnchokingInterval': config.getint('default', 'UnchokingInterval'),
-            'OptimisticUnchokingInterval': config.getint('default', 'OptimisticUnchokingInterval'),
-            'FileName': config.get('default', 'FileName'),
-            'FileSize': config.getint('default', 'FileSize'),
-            'PieceSize': config.getint('default', 'PieceSize'),
-        }
+            for line in f:
+                if not line.strip():
+                    continue
+                key, value = line.strip().split()
+                settings[key] = value if not value.isdigit() else int(value)
         return settings
-        
     except FileNotFoundError:
         print(f"Error: {filename} not found.")
         return None

@@ -8,10 +8,10 @@ from bitfield import Bitfield
 from connection import ConnectionHandler
 
 class Peer:
-    def __intit__(self, peer_id):
+    def __init__(self, peer_id):
         # load basic config
         self.peer_id = peer_id
-        self.common_config = parse_common_config('Common.cfg')
+        self.common_cfg = parse_common_config('Common.cfg')
         self.peer_info = parse_peer_info('PeerInfo.cfg')
 
         # set up logger
@@ -129,3 +129,11 @@ class Peer:
                 logger.warning(f"Connection refused by {remote_peer_id} at {host}:{port}. Is it running?")
             except Exception as e:
                 logger.error(f"Failed to connect to {remote_peer_id}: {e}", exc_info=True)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 peerProcess.py <peer_id>")
+        sys.exit(1)
+    peer_id = sys.argv[1]
+    peer = Peer(peer_id)
+    peer.run()

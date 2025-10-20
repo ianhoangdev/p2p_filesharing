@@ -5,7 +5,6 @@ from logger import logger
 from message import (
     create_handshake, parse_handshake,
     create_bitfield, MSG_BITFIELD,
-    parse_message  # We'll need this soon
 )
 
 HANDSHAKE_LEN = 32
